@@ -1,31 +1,59 @@
 <template>
-  <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper">
-        <div class="slider-content">
-          <slider v-if="sliders.length" :sliders="sliders" />
+  <div class="recommend" v-loading="loading">
+    <scroll class="recommend-content">
+      <div>
+        <div class="slider-wrapper">
+          <div class="slider-content">
+            <slider v-if="sliders.length" :sliders="sliders" />
+          </div>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
+          <ul>
+            <li v-for="item in albums" class="item" :key="item.id">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.pic" alt="icon">
+              </div>
+              <div class="text">
+                <h2 class="name">{{ item.username }}</h2>
+                <p class="title">{{ item.title }}</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
 <script>
-import { getRecommend } from '../api/recommend.api'
-import Slider from '../components/base/slider/slider'
+import { getRecommend } from '@/api/recommend.api'
+import Slider from '@/components/base/slider/slider'
+import Scroll from '@/components/base/scroll/scroll'
 
 export default {
   name: 'recommend',
-  components: { Slider },
+  components: {
+    Slider,
+    Scroll
+  },
   data () {
     return {
-      sliders: []
+      sliders: [],
+      albums: [],
+      loading: false
     }
   },
   async created () {
-    const result = await getRecommend().then()
-    console.log(result)
-    this.sliders = result.sliders
+    this.loading = true
+    try {
+      const result = await getRecommend()
+      this.sliders = result.sliders
+      this.albums = result.albums
+    } catch (e) {
+      console.log(e)
+    }
+    this.loading = false
   }
 }
 </script>
