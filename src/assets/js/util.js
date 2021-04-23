@@ -1,5 +1,7 @@
+import { deepCopy } from '@/assets/js/assist'
+
 export function shuffle (source) {
-  const arr = source.slice()
+  const arr = deepCopy(source)
   for (let i = 0; i < arr.length; i++) {
     const j = getRandomInt(i)
     swap(arr, i, j)
