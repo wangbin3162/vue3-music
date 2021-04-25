@@ -75,6 +75,7 @@ import useCd from '@/components/player/useCd'
 import ProgressBar from '@/components/player/progress-bar'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
+import useLyric from '@/components/player/useLyric'
 
 export default {
   name: 'player',
@@ -99,6 +100,7 @@ export default {
     const { modeIcon, changeMode } = useMode()
     const { favoriteIcon, toggleFavorite } = useFavorite()
     const { cdRef, cdImageRef, cdCls } = useCd()
+    useLyric()
 
     // computed
     const playIcon = computed(() => playing.value ? 'icon-pause' : 'icon-play')
