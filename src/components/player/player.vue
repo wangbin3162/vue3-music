@@ -14,7 +14,29 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <!--中间cd唱片部分-->
+      <div class="middle">
+        <div class="middle-l">
+          <div ref="cdWrapperRef" class="cd-wrapper">
+            <div ref="cdRef" class="cd">
+              <img ref="cdImageRef" class="image" :class="cdCls" :src="currentSong.pic">
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
+          </div>
+          <span class="time time-r">{{ formatTime(currentSong.duration) }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i :class="modeIcon" @click="changeMode"></i>
@@ -38,6 +60,8 @@
            @pause="pause"
            @canplay="ready"
            @error="error"
+           @timeupdate="updateTime"
+           @ended="end"
     />
   </div>
 </template>
@@ -47,23 +71,41 @@ import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
 import useMode from '@/components/player/useMode'
 import useFavorite from '@/components/player/useFavorite'
+import useCd from '@/components/player/useCd'
+import ProgressBar from '@/components/player/progress-bar'
+import { formatTime } from '@/assets/js/util'
+import { PLAY_MODE } from '@/assets/js/constant'
 
 export default {
   name: 'player',
+  components: { ProgressBar },
   setup (props) {
+    // data
     const audioRef = ref(null)
     const songReady = ref(false)
+    const currentTime = ref(0)
+    let progressChanging = false
+
+    // vuex
     const store = useStore()
-    const { modeIcon, changeMode } = useMode()
-    const { favoriteIcon, toggleFavorite } = useFavorite()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
     const currentIndex = computed(() => store.state.currentIndex)
     const playList = computed(() => store.state.playlist)
     const playing = computed(() => store.state.playing)
+    const playMode = computed(() => store.state.playMode)
+
+    // hooks
+    const { modeIcon, changeMode } = useMode()
+    const { favoriteIcon, toggleFavorite } = useFavorite()
+    const { cdRef, cdImageRef, cdCls } = useCd()
+
+    // computed
     const playIcon = computed(() => playing.value ? 'icon-pause' : 'icon-play')
     const disableCls = computed(() => songReady.value ? '' : 'disable')
+    const progress = computed(() => currentTime.value / currentSong.value.duration)
 
+    // watch
     watch(currentSong, (newSong, oldSong) => {
       if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
         return
@@ -71,6 +113,7 @@ export default {
       const audioEl = audioRef.value
       songReady.value = false
       audioEl.src = newSong.url
+      currentTime.value = 0
       audioEl.play()
     })
 
@@ -82,6 +125,7 @@ export default {
       newPlaying ? audioEl.play() : audioEl.pause()
     })
 
+    // methods
     function goBack () {
       store.commit('setFullScreen', false)
     }
@@ -94,6 +138,7 @@ export default {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
       audioEl.play()
+      store.commit('setPlayingState', true)
     }
 
     function prev () {
@@ -149,12 +194,45 @@ export default {
       songReady.value = true
     }
 
+    function end () {
+      currentTime.value = 0
+      if (playMode.value === PLAY_MODE.loop) {
+        loop()
+      } else {
+        next()
+      }
+    }
+
+    function updateTime (e) {
+      if (!progressChanging) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+
+    function onProgressChanging (progress) {
+      progressChanging = true
+      currentTime.value = currentSong.value.duration * progress
+    }
+
+    function onProgressChanged (progress) {
+      progressChanging = false
+      audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+      if (!playing.value) {
+        store.commit('setPlayingState', true)
+      }
+    }
+
     return {
       audioRef,
+      cdRef,
+      cdImageRef,
       fullScreen,
+      currentTime,
       currentSong,
       playIcon,
       disableCls,
+      progress,
+      cdCls,
       ready,
       error,
       goBack,
@@ -162,6 +240,11 @@ export default {
       pause,
       prev,
       next,
+      end,
+      updateTime,
+      formatTime,
+      onProgressChanging,
+      onProgressChanged,
       // mode
       modeIcon,
       changeMode,
