@@ -14,41 +14,160 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <div class="bottom">
+        <div class="operators">
+          <div class="icon i-left">
+            <i :class="modeIcon" @click="changeMode"></i>
+          </div>
+          <div class="icon i-left" :class="disableCls">
+            <i class="icon-prev" @click="prev"></i>
+          </div>
+          <div class="icon i-center" :class="disableCls">
+            <i :class="playIcon" @click="togglePlay"></i>
+          </div>
+          <div class="icon i-right" :class="disableCls">
+            <i class="icon-next" @click="next"></i>
+          </div>
+          <div class="icon i-right">
+            <i :class="favoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
+          </div>
+        </div>
+      </div>
     </div>
-    <audio ref="audioRef" />
+    <audio ref="audioRef"
+           @pause="pause"
+           @canplay="ready"
+           @error="error"
+    />
   </div>
 </template>
 
 <script>
 import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
+import useMode from '@/components/player/useMode'
+import useFavorite from '@/components/player/useFavorite'
 
 export default {
   name: 'player',
   setup (props) {
     const audioRef = ref(null)
+    const songReady = ref(false)
     const store = useStore()
+    const { modeIcon, changeMode } = useMode()
+    const { favoriteIcon, toggleFavorite } = useFavorite()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
+    const currentIndex = computed(() => store.state.currentIndex)
+    const playList = computed(() => store.state.playlist)
+    const playing = computed(() => store.state.playing)
+    const playIcon = computed(() => playing.value ? 'icon-pause' : 'icon-play')
+    const disableCls = computed(() => songReady.value ? '' : 'disable')
 
-    watch(currentSong, (newSong) => {
-      if (!newSong.id || !newSong.url) {
+    watch(currentSong, (newSong, oldSong) => {
+      if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
         return
       }
       const audioEl = audioRef.value
+      songReady.value = false
       audioEl.src = newSong.url
       audioEl.play()
+    })
+
+    watch(playing, (newPlaying) => {
+      if (!songReady.value) {
+        return
+      }
+      const audioEl = audioRef.value
+      newPlaying ? audioEl.play() : audioEl.pause()
     })
 
     function goBack () {
       store.commit('setFullScreen', false)
     }
 
+    function togglePlay () {
+      store.commit('setPlayingState', !playing.value)
+    }
+
+    function loop () {
+      const audioEl = audioRef.value
+      audioEl.currentTime = 0
+      audioEl.play()
+    }
+
+    function prev () {
+      const list = playList.value
+      if (!songReady.value || !list.length) {
+        return
+      }
+      if (list.length === 1) {
+        loop()
+      } else {
+        let index = currentIndex.value - 1
+        if (index === -1) {
+          index = list.length - 1
+        }
+        store.commit('setCurrentIndex', index)
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
+    }
+
+    function next () {
+      const list = playList.value
+      if (!songReady.value || !list.length) {
+        return
+      }
+      if (list.length === 1) {
+        loop()
+      } else {
+        let index = currentIndex.value + 1
+        if (index === list.length) {
+          index = 1
+        }
+        store.commit('setCurrentIndex', index)
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
+    }
+
+    function pause () {
+      store.commit('setPlayingState', false)
+    }
+
+    function ready () {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+    }
+
+    function error () {
+      songReady.value = true
+    }
+
     return {
       audioRef,
       fullScreen,
       currentSong,
-      goBack
+      playIcon,
+      disableCls,
+      ready,
+      error,
+      goBack,
+      togglePlay,
+      pause,
+      prev,
+      next,
+      // mode
+      modeIcon,
+      changeMode,
+      // favorite
+      favoriteIcon,
+      toggleFavorite
     }
   }
 }
@@ -244,6 +363,7 @@ export default {
           flex: 1;
           color: $color-theme;
           &.disable {
+            cursor: not-allowed;
             color: $color-theme-d;
           }
           i {
