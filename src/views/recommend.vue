@@ -29,7 +29,7 @@
 <script>
 import { getRecommend } from '@/api/recommend.api'
 import Slider from '@/components/base/slider/slider'
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 
 export default {
   name: 'recommend',

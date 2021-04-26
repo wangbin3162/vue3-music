@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 import SongList from '@/components/base/sond-list/song-list'
 
 const RESERVED_HEIGHT = 40
@@ -96,8 +96,10 @@ export default {
       return { display: this.scrollY >= this.maxTranslateY ? 'none' : null }
     },
     scrollStyle () {
+      const bottom = this.$store.state.playlist.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`
+        top: `${this.imageHeight}px`,
+        bottom
       }
     },
     filterStyle () {
