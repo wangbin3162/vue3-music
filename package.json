@@ -12,6 +12,7 @@
     "@better-scroll/observe-dom": "^2.3.0",
     "@better-scroll/slide": "^2.3.0",
     "axios": "^0.21.1",
+    "bin-animation": "^1.1.1",
     "core-js": "^3.6.5",
     "good-storage": "^1.1.1",
     "lyric-parser": "^1.0.1",
