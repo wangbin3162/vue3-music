@@ -14,6 +14,16 @@ export default function useMode () {
     return map[playModeVal]
   })
 
+  const modeText = computed(() => {
+    const playModeVal = playMode.value
+    const map = {
+      0: '顺序播放',
+      1: '单曲循环',
+      2: '随机播放'
+    }
+    return map[playModeVal]
+  })
+
   function changeMode () {
     const mode = (playMode.value + 1) % 3
     store.dispatch('changeMode', mode)
@@ -21,6 +31,7 @@ export default function useMode () {
 
   return {
     modeIcon,
+    modeText,
     changeMode
   }
 }

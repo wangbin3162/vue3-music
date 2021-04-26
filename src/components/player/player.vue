@@ -172,6 +172,7 @@ export default {
       audioEl.src = newSong.url
       currentTime.value = 0
       audioEl.play()
+      store.commit('setPlayingState', true)
     })
 
     watch(playing, (newPlaying) => {
@@ -225,9 +226,6 @@ export default {
           index = list.length - 1
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
 
@@ -244,9 +242,6 @@ export default {
           index = 1
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
 
