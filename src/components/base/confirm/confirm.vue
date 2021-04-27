@@ -53,6 +53,7 @@ export default {
   emits: ['update:modelValue', 'confirm', 'cancel'],
   methods: {
     confirm () {
+      this.hide()
       this.$emit('confirm')
     },
     cancel () {

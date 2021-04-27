@@ -30,6 +30,11 @@ export function remove (key, compare) {
   return items
 }
 
+export function clear (key) {
+  storage.remove(key)
+  return []
+}
+
 export function load (key) {
   return storage.get(key, [])
 }

@@ -23,7 +23,7 @@ const routes = [
     children: [
       {
         path: ':id',
-        component: () => import(/* webpackChunkName: "singer" */ '../views/singer/singer-detail.vue')
+        component: () => import(/* webpackChunkName: "singer-detail" */ '../views/singer/singer-detail.vue')
       }
     ]
   },
@@ -41,7 +41,13 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    component: () => import(/* webpackChunkName: "search" */ '../views/search/search.vue')
+    component: () => import(/* webpackChunkName: "search" */ '../views/search/search.vue'),
+    children: [
+      {
+        path: ':id',
+        component: () => import(/* webpackChunkName: "singer-detail" */ '../views/singer/singer-detail.vue')
+      }
+    ]
   }
 ]
 
