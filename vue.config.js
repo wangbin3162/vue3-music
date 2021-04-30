@@ -7,7 +7,7 @@ function resolve (dir) {
 }
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/music-next/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/vue3-music/' : '/',
   devServer: {
     before (app) {
       registerRouter(app)
