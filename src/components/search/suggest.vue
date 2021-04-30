@@ -44,7 +44,7 @@
 import { ref, watch, computed, nextTick } from 'vue'
 import { search } from '@/api/search'
 import { processSongs } from '@/api/song'
-import usePullUpLoad from '@/components/search/usePullUpLoad'
+import usePullUpload from '@/components/search/use-pull-upload'
 
 export default {
   name: 'suggest',
@@ -71,7 +71,7 @@ export default {
     const pullUpLoading = computed(() => isPullUpLoad.value && hasMore.value)
     const preventPullUpLoad = computed(() => loading.value || manualLoading.value)
 
-    const { scroll, rootRef, isPullUpLoad } = usePullUpLoad(searchMore, preventPullUpLoad)
+    const { scroll, rootRef, isPullUpLoad } = usePullUpload(searchMore, preventPullUpLoad)
 
     watch(() => props.query, async (newQuery) => {
       if (!newQuery) {

@@ -7,7 +7,7 @@ import { ref, onMounted, onUnmounted, onActivated, onDeactivated } from 'vue'
 BScroll.use(PullUp)
 BScroll.use(ObserveDOM)
 
-export default function usePullUpLoad (requestData, preventPullUpLoad) {
+export default function usePullUpload (requestData, preventPullUpLoad) {
   const scroll = ref(null)
   const rootRef = ref(null)
   const isPullUpLoad = ref(false)

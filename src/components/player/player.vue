@@ -112,6 +112,7 @@ import { PLAY_MODE } from '@/assets/js/constant'
 import Scroll from '@/components/base/scroll/scroll'
 import MiniPlayer from '@/components/player/mini-player'
 import useAnimation from '@/components/player/useAnimation'
+import usePlayHistory from '@/components/player/use-play-history'
 
 export default {
   name: 'player',
@@ -156,6 +157,7 @@ export default {
       onMiddleTouchEnd
     } = useMiddleInteractive()
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+    const { savePlay } = usePlayHistory()
 
     // computed
     const playIcon = computed(() => playing.value ? 'icon-pause' : 'icon-play')
@@ -255,6 +257,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
 
     function error () {

@@ -64,7 +64,7 @@ import { useRouter } from 'vue-router'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
 import SearchList from '@/components/base/search-list/search-list'
-import useSearchHistory from '@/components/search/useSearchHistory'
+import useSearchHistory from '@/components/search/use-search-history'
 import Scroll from '@/components/wrap-scroll'
 import Confirm from '@/components/base/confirm/confirm'
 

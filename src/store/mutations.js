@@ -23,6 +23,9 @@ const mutations = {
   setSearchHistory (state, searches) {
     state.searchHistory = searches
   },
+  setPlayHistory (state, songs) {
+    state.playHistory = songs
+  },
   addSongLyric (state, { song, lyric }) {
     state.sequenceList.map(item => {
       if (item.mid === song.mid) {

@@ -54,8 +54,8 @@
 
 <script>
 import Scroll from '@/components/wrap-scroll'
-import useFixed from './useFixed'
-import useShortcut from './useShortcut'
+import useFixed from './use-fixed'
+import useShortcut from './use-shortcut'
 
 export default {
   name: 'index-list',
